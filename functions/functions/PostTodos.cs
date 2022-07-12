@@ -1,35 +1,43 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using functions.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace functions
 {
+
     public static class PostTodos
     {
+        private const string Route = "postTodo";
+        private const string BlobPath = "todos";
+
         [FunctionName("PostTodos")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+        public static async Task<IActionResult> CreateTodo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Route)] HttpRequest req,
+            [Blob(BlobPath, Connection = "AzureWebJobsStorage")] BlobContainerClient todoContainer,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
-
+            log.LogInformation("Creating a new todo list item");
+            await todoContainer.CreateIfNotExistsAsync();
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            var input = JsonConvert.DeserializeObject<TodoCreateModel>(requestBody);
+            var todo = new Todo() { Description = input.Description };
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+            var blob = todoContainer.GetBlobClient($"{todo.Id}.json");
+            await blob.UploadTextAsync(JsonConvert.SerializeObject(todo));
 
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult(todo);
         }
     }
 }
