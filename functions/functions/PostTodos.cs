@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Storage.Blobs;
@@ -31,7 +32,7 @@ namespace functions
             log.LogInformation("Creating a new todo list item");
             await todoContainer.CreateIfNotExistsAsync();
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var input = JsonConvert.DeserializeObject<TodoCreateModel>(requestBody);
+            var input = JsonConvert.DeserializeObject<Todo>(requestBody);
             var todo = new Todo() { Description = input.Description };
 
             var blob = todoContainer.GetBlobClient($"{todo.Id}.json");

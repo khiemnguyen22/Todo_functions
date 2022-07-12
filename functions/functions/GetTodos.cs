@@ -17,7 +17,7 @@ namespace functions
 {
     public static class GetTodos
     {
-        private const string Route = "blobtodo";
+        private const string Route = "getTodos";
         private const string BlobPath = "todos";
 
         [FunctionName("GetTodos")]
