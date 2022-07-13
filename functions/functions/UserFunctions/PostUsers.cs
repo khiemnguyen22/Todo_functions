@@ -19,10 +19,10 @@ namespace functions.UserFunctions
 {
     public static class PostUsers
     {
-        private const string Route = "postUsers";
+        private const string Route = "postUser";
         private const string container = "users";
 
-        [FunctionName("PostTodos")]
+        [FunctionName("PostUsers")]
         public static async Task<IActionResult> CreateUser(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Route)] HttpRequest req,
             [Blob(container, Connection = "AzureWebJobsStorage")] BlobContainerClient userContainer,
