@@ -20,12 +20,12 @@ namespace functions
     public static class GetTodosById
     {
         private const string Route = "getTodoById";
-        private const string BlobPath = "todos";
+        private const string container = "todos";
 
         [FunctionName("GetTodosById")]
         public static IActionResult GetTodoById(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Route + "/{id}")] HttpRequest req,
-            [Blob(BlobPath + "/{id}.json", Connection = "AzureWebJobsStorage")] string json,
+            [Blob(container + "/{id}.json", Connection = "AzureWebJobsStorage")] string json,
             ILogger log, string id)
         {
             log.LogInformation("Getting todo item by id");

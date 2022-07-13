@@ -20,12 +20,12 @@ namespace functions
     public static class DeleteTodos
     {
         private const string Route = "deleteTodo";
-        private const string BlobPath = "todos";
+        private const string container = "todos";
 
         [FunctionName("DeleteTodos")]
         public static async Task<IActionResult> DeleteTodo(
         [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = Route + "/{id}")] HttpRequest req,
-        [Blob(BlobPath + "/{id}.json", Connection = "AzureWebJobsStorage")] BlobClient blob,
+        [Blob(container + "/{id}.json", Connection = "AzureWebJobsStorage")] BlobClient blob,
         ILogger log, string id)
         {
             if (!await blob.ExistsAsync())

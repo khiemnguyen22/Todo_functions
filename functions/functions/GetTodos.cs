@@ -18,12 +18,12 @@ namespace functions
     public static class GetTodos
     {
         private const string Route = "getTodos";
-        private const string BlobPath = "todos";
+        private const string container = "todos";
 
         [FunctionName("GetTodos")]
         public static async Task<IActionResult> GetAllTodos(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Route)] HttpRequest req,
-            [Blob(BlobPath, Connection = "AzureWebJobsStorage")] BlobContainerClient todoContainer,
+            [Blob(container, Connection = "AzureWebJobsStorage")] BlobContainerClient todoContainer,
             ILogger log)
         {
             log.LogInformation("Getting todo list items");

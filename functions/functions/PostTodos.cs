@@ -20,12 +20,12 @@ namespace functions
     public static class PostTodos
     {
         private const string Route = "postTodo";
-        private const string BlobPath = "todos";
+        private const string container = "todos";
 
         [FunctionName("PostTodos")]
         public static async Task<IActionResult> CreateTodo(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Route)] HttpRequest req,
-            [Blob(BlobPath, Connection = "AzureWebJobsStorage")] BlobContainerClient todoContainer,
+            [Blob(container, Connection = "AzureWebJobsStorage")] BlobContainerClient todoContainer,
             ILogger log)
         {
 

@@ -20,11 +20,11 @@ namespace functions
     public static class UpdateTodos
     {
         private const string Route = "updateTodo";
-        private const string BlobPath = "todos";
+        private const string container = "todos";
         [FunctionName("UpdateTodos")]
         public static async Task<IActionResult> UpdateTodo(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = Route + "/{id}")] HttpRequest req,
-            [Blob(BlobPath + "/{id}.json", Connection = "AzureWebJobsStorage")] BlobClient blob,
+            [Blob(container + "/{id}.json", Connection = "AzureWebJobsStorage")] BlobClient blob,
             ILogger log, string id)
         {
 
