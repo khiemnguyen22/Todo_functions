@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace functions.TodoFunctions;
+namespace functions.Helpers;
 
 internal static class BlobClientExtensions
 {
