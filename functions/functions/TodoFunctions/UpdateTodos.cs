@@ -14,7 +14,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace functions
+namespace functions.TodoFunctions
 {
 
     public static class UpdateTodos
