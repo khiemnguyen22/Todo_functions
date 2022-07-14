@@ -39,5 +39,28 @@ namespace functions.TodoFunctions
             }
             return new OkObjectResult(todos);
         }
+
+        [FunctionName("GetCompletedTodos")]
+        public static async Task<IActionResult> GetCompletedTodos(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Route + "Completed")] HttpRequest req,
+            [Blob(container, Connection = "AzureWebJobsStorage")] BlobContainerClient todoContainer,
+            ILogger log)
+        {
+            log.LogInformation("Getting completed todo list items");
+            await todoContainer.CreateIfNotExistsAsync();
+
+            var todos = new List<Todo>();
+            await foreach (var result in todoContainer.GetBlobsAsync())
+            {
+                var blob = todoContainer.GetBlobClient(result.Name);
+                var json = await blob.DownloadTextAsync();
+                var todo = JsonConvert.DeserializeObject<Todo>(json);
+                if (todo.IsCompleted == true)
+                {
+                    todos.Add(JsonConvert.DeserializeObject<Todo>(json));
+                }
+            }
+            return new OkObjectResult(todos);
+        }
     }
 }

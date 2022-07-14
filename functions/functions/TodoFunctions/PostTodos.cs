@@ -22,6 +22,7 @@ namespace functions.TodoFunctions
     {
         private const string Route = "postTodo";
         private const string container = "todos";
+        private const string userContainer = "users";
 
         [FunctionName("PostTodos")]
         public static async Task<IActionResult> CreateTodo(
@@ -41,5 +42,36 @@ namespace functions.TodoFunctions
 
             return new OkObjectResult(todo);
         }
+
+        [FunctionName("PostAuthTodos")]
+        public static async Task<IActionResult> CreateAuthTodo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Route +"/{userId}")] HttpRequest req,
+            [Blob(userContainer + "/{userId}.json", Connection = "AzureWebJobsStorage")] string json,
+            [Blob(container, Connection = "AzureWebJobsStorage")] BlobContainerClient todoContainer,
+            ILogger log, string userId)
+        {
+
+            log.LogInformation("Creating a new todo list item");
+            await todoContainer.CreateIfNotExistsAsync();
+            if (json == null)
+            {
+                log.LogInformation($"Item {userId} not found");
+                return new NotFoundResult();
+            }
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var inputUser = JsonConvert.DeserializeObject<User>(json);
+            var input = JsonConvert.DeserializeObject<UserAuthTodo>(requestBody);
+            var todo = new UserAuthTodo() 
+            { 
+                Description = input.Description,
+                UserId = inputUser.Id,
+            };
+
+            var blob = todoContainer.GetBlobClient($"{todo.Id}.json");
+            await blob.UploadTextAsync(JsonConvert.SerializeObject(todo));
+
+            return new OkObjectResult(todo);
+        }
+
     }
 }
